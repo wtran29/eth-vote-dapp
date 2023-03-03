@@ -1,0 +1,11 @@
+{
+    "server": {
+      "baseDir": "app/frontend/src",
+      "routes": {
+        "/node_modules": "node_modules"
+      }
+    },
+    "files": ["app/frontend/src/**/*.{html,css,js}"],
+    "open": false
+}
+  

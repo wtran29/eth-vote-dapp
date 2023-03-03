@@ -14,7 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
-	ballot "github.com/wtran29/eth-vote-dapp/app/contracts/go/Ballot"
+	Ballot "github.com/wtran29/eth-vote-dapp/app/contracts/go/binding"
 )
 
 type ContractDetails struct {
@@ -95,7 +95,7 @@ func GetTodoListContractDetails() {
 
 	// Instantiate the contract
 
-	contractInstance, err := ballot.NewBallot(contractAddress, client)
+	contractInstance, err := Ballot.NewBallot(contractAddress, client)
 	fmt.Printf("contract instance: %v\n", contractInstance)
 	if err != nil {
 		fmt.Println("Failed to instantiate contract:", err)

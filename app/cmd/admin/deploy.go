@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/joho/godotenv"
 	"github.com/wtran29/eth-vote-dapp/app/block/account"
-	ballot "github.com/wtran29/eth-vote-dapp/app/contracts/go/Ballot"
+	Ballot "github.com/wtran29/eth-vote-dapp/app/contracts/go/binding"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 	// migrations.DeployMigrations(client)
 	// migrations.DeployTodoList(client)
 	auth := account.GetAccountAuth(client, acctAddress)
-	address, tx, instance, err := ballot.DeployBallot(auth, client)
+	address, tx, instance, err := Ballot.DeployBallot(auth, client)
 	if err != nil {
 		log.Fatalf("Failed to deploy TodoList contract: %v", err)
 	}

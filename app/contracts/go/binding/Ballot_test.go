@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"math/big"
+	"strings"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
 	"github.com/ethereum/go-ethereum/core"
@@ -236,16 +238,37 @@ func TestBallot(t *testing.T) {
 			assert.Nil(t, tx2)
 		}
 
-		// candidate2, err := contract.Candidates(nil, candidateId2)
-		fmt.Println("candidate 2 vote=", candidate2.VoteCount)
-		assert.NoError(t, err)
-		assert.Equal(t, big.NewInt(0).String(), candidate2.VoteCount.String())
-
 		// Ensure that candidate 1 still has only 1 vote
 		// candidate1, err = contract.Candidates(nil, candidateId1)
 		fmt.Println("candidate 1 vote=", candidate1.VoteCount)
 		assert.NoError(t, err)
 		assert.Equal(t, big.NewInt(1).String(), candidate1.VoteCount.String())
+
+		// candidate2, err := contract.Candidates(nil, candidateId2)
+		fmt.Println("candidate 2 vote=", candidate2.VoteCount)
+		assert.NoError(t, err)
+		assert.Equal(t, big.NewInt(0).String(), candidate2.VoteCount.String())
+
+		// Confirm that the votedEvent was emitted for Candidate 1
+		receipt, err := sim.TransactionReceipt(context.Background(), tx1.Hash())
+		require.NoError(t, err)
+		logs := receipt.Logs
+		assert.Len(t, logs, 1)
+
+		event := logs[0]
+		abiFile, err := abi.JSON(strings.NewReader("app/contracts/abi/ballot/Ballot.abi"))
+		if err != nil {
+			fmt.Println("Failed to read ABI file:", err)
+			return
+		}
+
+		expectedSig := abiFile.Events["VotedEvent"].ID
+		actualSig := event.Topics[0]
+		assert.Equal(t, expectedSig, actualSig)
+
+		var candidateId big.Int
+		candidateId.SetBytes(event.Topics[1].Bytes())
+		assert.Equal(t, candidate1.Id, &candidateId)
 	})
 
 }

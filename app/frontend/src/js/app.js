@@ -90,6 +90,9 @@ App = {
         var candidatesResults = $("#candidatesResults");
         candidatesResults.empty();
 
+        var candidatesSelect = $('#candidatesSelect');
+        candidatesSelect.empty();
+
         for (var i = 0; i < candidates.length; i++) {
             const id = candidates[i].id;
             const name = candidates[i].name;
@@ -101,6 +104,16 @@ App = {
             // Render candidate Result
             const candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
             candidatesResults.append(candidateTemplate);
+
+            // Render candidate ballot option
+            var candidateOption = "<option value='" + id +"' >" + name + "</ option >"
+            candidatesSelect.append(candidateOption);
+        }
+        return App.contracts.Ballot.methods.voters(App.account).call();
+      }).then(function(hasVoted){
+        //Do not allow a user to vote
+        if(hasVoted) {
+          $('form').hide();
         }
 
         loader.hide();
@@ -108,6 +121,18 @@ App = {
         }).catch(function(error){
         console.warn(error);
         });
+    },
+
+    castVote: function() {
+      var candidateId = $('#candidatesSelect').val();
+      App.contracts.Ballot.methods.vote(candidateId).send({from: App.account})
+      .then(function(result){
+        // Wait for votes to update
+        $("#content").hide();
+        $("#loader").show();
+      }).catch(function(err){
+        console.error(err);
+      });
     }
   };
   $(() => {

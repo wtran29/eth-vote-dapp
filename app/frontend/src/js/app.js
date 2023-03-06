@@ -51,8 +51,21 @@ App = {
         console.log("Contract methods:", App.contracts.Ballot.methods);
   
         App.contracts.Ballot.setProvider(App.web3Provider); 
+
+        App.listenForEvents();
   
         return App.render();
+      });
+    },
+
+    listenForEvents: function() {
+      App.contracts.Ballot.events.votedEvent({}, {
+        fromBlock: 0,
+        toBlock: 'latest'
+      }, function(error, event){
+        console.log("event triggered", event)
+
+        App.render();
       });
     },
   
